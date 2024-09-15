@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:jenphar_e_library/src/screens/auth/auth_controller_getx.dart';
+import 'package:jenphar_e_library/src/screens/home/home_screen.dart';
 
 class LoginScreens extends StatefulWidget {
   const LoginScreens({super.key});
@@ -11,7 +14,7 @@ class LoginScreens extends StatefulWidget {
 
 class _LoginScreensState extends State<LoginScreens> {
   TextEditingController userNameController = TextEditingController();
-  TextEditingController upasswordController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   final key = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -67,6 +70,14 @@ class _LoginScreensState extends State<LoginScreens> {
                     color: Colors.white,
                   ),
                   child: TextFormField(
+                    validator: (value) {
+                      if (value != null && value.isNotEmpty) {
+                        return null;
+                      } else {
+                        return "User name can't be empty";
+                      }
+                    },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       hintText: "User Name",
                       hintStyle: TextStyle(
@@ -88,6 +99,14 @@ class _LoginScreensState extends State<LoginScreens> {
                     color: Colors.white,
                   ),
                   child: TextFormField(
+                    validator: (value) {
+                      if (value != null && value.length > 3) {
+                        return null;
+                      } else {
+                        return "Password is too short";
+                      }
+                    },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       hintText: "Password",
                       hintStyle: TextStyle(
@@ -110,10 +129,24 @@ class _LoginScreensState extends State<LoginScreens> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: () {
-                      Get.to(
-                        () => const LoginScreens(),
-                      );
+                    onPressed: () async {
+                      if (key.currentState!.validate()) {
+                        //TODO: Login functionality
+                        final infoBox = Hive.box('info');
+                        infoBox.put('userName', userNameController.text);
+                        infoBox.put('password', passwordController.text);
+
+                        final AuthControllerGetx authControllerGetx =
+                            Get.put(AuthControllerGetx());
+                        authControllerGetx.userName.value =
+                            userNameController.text;
+                        authControllerGetx.password.value =
+                            passwordController.text;
+
+                        Get.offAll(
+                          () => const HomeScreen(),
+                        );
+                      }
                     },
                     child: const Text(
                       "LOGIN",
