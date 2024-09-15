@@ -41,6 +41,7 @@ dependencies:
   hive_flutter: ^1.1.0
   loading_animation_widget: ^1.2.1
   gap: ^3.0.1
+  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +68,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/jenphar_elibrary_logo.png
+    - assets/poster_1725353869082.jpeg
+    - assets/dummy-profile.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
