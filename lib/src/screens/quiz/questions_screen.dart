@@ -243,7 +243,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                     ),
                   ),
                 ),
-          Gap(20),
+          const Gap(20),
           if (indexOfQuestion != widget.quiestuons.length)
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.90,
@@ -256,7 +256,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                   indexOfQuestion++;
                   setState(() {});
                 },
-                child: Text(
+                child: const Text(
                   "Next",
                   style: TextStyle(
                     fontSize: 18,

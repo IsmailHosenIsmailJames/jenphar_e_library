@@ -42,6 +42,7 @@ dependencies:
   loading_animation_widget: ^1.2.1
   gap: ^3.0.1
   flutter_svg: ^2.0.10+1
+  icons_launcher: ^2.1.7
 
 dev_dependencies:
   flutter_test:
@@ -97,3 +98,36 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+
+icons_launcher:
+  image_path: "assets/logo.png"
+  platforms:
+    android:
+      enable: true
+      image_path: "assets/logo.png"
+      notification_image: "assets/logo.png"
+      # adaptive_background_color: '#ffffff'
+      adaptive_background_image: "assets/logo.png"
+      adaptive_foreground_image: "assets/logo.png"
+      adaptive_round_image: "assets/logo.png"
+      adaptive_monochrome_image: "assets/logo.png"
+    ios:
+      enable: true
+      image_path: "assets/logo.png"
+      # For iOS 18+ (support dark and tinted)
+      # dark_path: "assets/ic_logo_rectangle_dark.png"
+      # tinted_path: "assets/ic_logo_rectangle_tinted.png"
+    web:
+      enable: true
+      image_path: "assets/logo.png"
+      favicon_path: "assets/logo.png"
+    macos:
+      enable: true
+      image_path: "assets/logo.png"
+    windows:
+      enable: true
+      image_path: "assets/logo.png"
+    linux:
+      enable: true
+      image_path: "assets/logo.png"
