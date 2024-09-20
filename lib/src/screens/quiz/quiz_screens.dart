@@ -53,13 +53,17 @@ class _QuizScreensState extends State<QuizScreens> {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: List.generate(
-          10,
-          (index) {
-            return examCard(index);
-          },
+      body: MediaQuery(
+        data:
+            const MediaQueryData().copyWith(textScaler: TextScaler.linear(0.8)),
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: List.generate(
+            10,
+            (index) {
+              return examCard(index);
+            },
+          ),
         ),
       ),
     );
@@ -89,7 +93,7 @@ class _QuizScreensState extends State<QuizScreens> {
                 ),
                 topRight: Radius.circular(10),
               ),
-              color: Colors.blue,
+              color: Color.fromARGB(255, 53, 121, 177),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -109,7 +113,7 @@ class _QuizScreensState extends State<QuizScreens> {
                         ? "True/False 3H June & July'24"
                         : "M.C.Q 2 Hemato May'24",
                     style: const TextStyle(
-                      fontSize: 26,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -142,7 +146,7 @@ class _QuizScreensState extends State<QuizScreens> {
                 const Text(
                   "10 Minutes",
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 )
@@ -173,7 +177,7 @@ class _QuizScreensState extends State<QuizScreens> {
                 const Text(
                   "4:00 PM - 14th Jul, 2024",
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 )
@@ -204,7 +208,7 @@ class _QuizScreensState extends State<QuizScreens> {
                 const Text(
                   "4:10 PM - 14th Jul, 2024",
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 )
@@ -276,18 +280,18 @@ class _QuizScreensState extends State<QuizScreens> {
             },
             child: Container(
               height: 60,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(10),
                   bottomRight: Radius.circular(10),
                 ),
-                color: Colors.blue.shade900,
+                color: Color.fromARGB(255, 30, 59, 102),
               ),
               alignment: Alignment.center,
               child: const Text(
-                'Start Exam',
+                'START EXAM',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 21,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
