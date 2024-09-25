@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jenphar_e_library/src/screens/auth/auth_controller_getx.dart';
+import 'package:jenphar_e_library/src/screens/auth/login/model/login_response_model.dart';
 import 'package:jenphar_e_library/src/screens/home/home_screen.dart';
 import 'package:jenphar_e_library/src/screens/setup/welcome_screen.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -30,13 +31,14 @@ class MyApp extends StatelessWidget {
           const Duration(milliseconds: 100),
         );
         final infoBox = Hive.box('info');
-        final userNamae = infoBox.get('userName', defaultValue: null);
-        final password = infoBox.get('password', defaultValue: null);
-        if (userNamae != null && password != null) {
-          final authControllerGetx = Get.put(AuthControllerGetx());
-          authControllerGetx.password.value = password;
-          authControllerGetx.userName.value = userNamae;
+        final userInfo = infoBox.get('userInfo', defaultValue: null);
 
+        if (userInfo != null) {
+          await Future.delayed(const Duration(milliseconds: 200));
+          final authControllerGetx = Get.put(AuthControllerGetx());
+          authControllerGetx.loginResponseModel.value = [
+            LoginResponseModel.fromMap(Map<String, dynamic>.from(userInfo))
+          ];
           Get.offAll(
             () => const HomeScreen(),
           );

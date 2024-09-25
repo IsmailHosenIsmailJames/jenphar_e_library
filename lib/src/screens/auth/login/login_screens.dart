@@ -1,8 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:http/http.dart';
+import 'package:jenphar_e_library/src/api/apis.dart';
 import 'package:jenphar_e_library/src/screens/auth/auth_controller_getx.dart';
+import 'package:jenphar_e_library/src/screens/auth/login/model/login_response_model.dart';
 import 'package:jenphar_e_library/src/screens/home/home_screen.dart';
 
 class LoginScreens extends StatefulWidget {
@@ -15,6 +21,7 @@ class LoginScreens extends StatefulWidget {
 class _LoginScreensState extends State<LoginScreens> {
   TextEditingController userNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool loading = false;
   final key = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -77,6 +84,7 @@ class _LoginScreensState extends State<LoginScreens> {
                         return "User name can't be empty";
                       }
                     },
+                    controller: userNameController,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       hintText: "User Name",
@@ -107,6 +115,7 @@ class _LoginScreensState extends State<LoginScreens> {
                       }
                     },
                     autovalidateMode: AutovalidateMode.onUserInteraction,
+                    controller: passwordController,
                     decoration: InputDecoration(
                       hintText: "Password",
                       hintStyle: TextStyle(
@@ -131,31 +140,53 @@ class _LoginScreensState extends State<LoginScreens> {
                     ),
                     onPressed: () async {
                       if (key.currentState!.validate()) {
-                        //TODO: Login functionality
-                        final infoBox = Hive.box('info');
-                        infoBox.put('userName', userNameController.text);
-                        infoBox.put('password', passwordController.text);
+                        print(jsonEncode({
+                          "username": userNameController.text.trim(),
+                          "password": passwordController.text
+                        }));
+                        final response = await post(
+                            Uri.parse(apiBase + apiLogin),
+                            headers: {"Content-Type": "application/json"},
+                            body: jsonEncode({
+                              "username": userNameController.text.trim(),
+                              "password": passwordController.text
+                            }));
 
-                        final AuthControllerGetx authControllerGetx =
-                            Get.put(AuthControllerGetx());
-                        authControllerGetx.userName.value =
-                            userNameController.text;
-                        authControllerGetx.password.value =
-                            passwordController.text;
+                        if (response.statusCode == 200) {
+                          final decoded = jsonDecode(response.body);
+                          if (decoded['success'] == true) {
+                            Fluttertoast.showToast(msg: decoded['message']);
+                            final authControllerGetx =
+                                Get.put(AuthControllerGetx());
+                            authControllerGetx.loginResponseModel.add(
+                                LoginResponseModel.fromMap(
+                                    Map<String, dynamic>.from(
+                                        decoded['user'])));
+                            await Hive.box('info')
+                                .put('userInfo', decoded['user']);
 
-                        Get.offAll(
-                          () => const HomeScreen(),
-                        );
+                            Get.offAll(() => HomeScreen());
+                          } else {
+                            Fluttertoast.showToast(msg: decoded['message']);
+                          }
+                        } else {
+                          print(response.body);
+                          Fluttertoast.showToast(msg: "Something went worng");
+                        }
                       }
                     },
-                    child: const Text(
-                      "LOGIN",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: loading
+                        ? CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : const Text(
+                            "LOGIN",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
               ],
