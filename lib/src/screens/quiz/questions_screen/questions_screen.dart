@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import 'package:jenphar_e_library/src/screens/quiz/question_model.dart';
+import 'package:jenphar_e_library/src/screens/quiz/questions_screen/question_model.dart';
 
 class QuestionsScreen extends StatefulWidget {
   final List<QuestionModel> quiestuons;

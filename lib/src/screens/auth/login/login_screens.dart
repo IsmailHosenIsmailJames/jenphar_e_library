@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -140,10 +141,9 @@ class _LoginScreensState extends State<LoginScreens> {
                     ),
                     onPressed: () async {
                       if (key.currentState!.validate()) {
-                        print(jsonEncode({
-                          "username": userNameController.text.trim(),
-                          "password": passwordController.text
-                        }));
+                        setState(() {
+                          loading = true;
+                        });
                         final response = await post(
                             Uri.parse(apiBase + apiLogin),
                             headers: {"Content-Type": "application/json"},
@@ -151,6 +151,9 @@ class _LoginScreensState extends State<LoginScreens> {
                               "username": userNameController.text.trim(),
                               "password": passwordController.text
                             }));
+
+                        log(response.body);
+                        log(response.statusCode.toString());
 
                         if (response.statusCode == 200) {
                           final decoded = jsonDecode(response.body);
@@ -165,18 +168,20 @@ class _LoginScreensState extends State<LoginScreens> {
                             await Hive.box('info')
                                 .put('userInfo', decoded['user']);
 
-                            Get.offAll(() => HomeScreen());
+                            Get.offAll(() => const HomeScreen());
                           } else {
                             Fluttertoast.showToast(msg: decoded['message']);
                           }
                         } else {
-                          print(response.body);
                           Fluttertoast.showToast(msg: "Something went worng");
                         }
                       }
+                      setState(() {
+                        loading = false;
+                      });
                     },
                     child: loading
-                        ? CircularProgressIndicator(
+                        ? const CircularProgressIndicator(
                             color: Colors.white,
                           )
                         : const Text(

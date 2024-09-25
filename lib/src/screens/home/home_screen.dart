@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:jenphar_e_library/src/screens/quiz/quiz_screens.dart';
+import 'package:jenphar_e_library/src/screens/quiz/quiz_list_screen/quiz_screens.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

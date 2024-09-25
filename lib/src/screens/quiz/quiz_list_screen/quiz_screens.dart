@@ -1,8 +1,16 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:jenphar_e_library/src/screens/quiz/question_model.dart';
-import 'package:jenphar_e_library/src/screens/quiz/questions_screen.dart';
+import 'package:http/http.dart';
+import 'package:jenphar_e_library/src/api/apis.dart';
+import 'package:jenphar_e_library/src/screens/quiz/questions_screen/question_model.dart';
+import 'package:jenphar_e_library/src/screens/quiz/questions_screen/questions_screen.dart';
+import 'package:jenphar_e_library/src/screens/quiz/quiz_list_screen/controller/quiz_list_controller.dart';
+import 'package:jenphar_e_library/src/screens/quiz/quiz_list_screen/model/quiz_list_model.dart';
 
 class QuizScreens extends StatefulWidget {
   final String title;
@@ -13,6 +21,44 @@ class QuizScreens extends StatefulWidget {
 }
 
 class _QuizScreensState extends State<QuizScreens> {
+  final quizListController = Get.put(QuizListController());
+  @override
+  void initState() {
+    getQuizList();
+    super.initState();
+  }
+
+  bool loading = false;
+
+  void getQuizList() async {
+    setState(() {
+      loading = true;
+    });
+    final response =
+        await get(Uri.parse("$apiBase$apiQuizList?category=${widget.title}"));
+    log(response.statusCode.toString());
+    log(response.body);
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      if (decoded['success'] == true) {
+        List<Map> listOfRawQuiz = List<Map>.from(decoded['quizzes']);
+        List<QuizListModel> quizListModel = [];
+        for (Map e in listOfRawQuiz) {
+          quizListModel
+              .add(QuizListModel.fromMap(Map<String, dynamic>.from(e)));
+        }
+        quizListController.quizList.value = quizListModel;
+      } else {
+        Fluttertoast.showToast(msg: decoded['message'].toString());
+      }
+    } else {
+      Fluttertoast.showToast(msg: 'Something went worng');
+    }
+    setState(() {
+      loading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,22 +100,34 @@ class _QuizScreensState extends State<QuizScreens> {
         ],
       ),
       body: MediaQuery(
-        data:
-            const MediaQueryData().copyWith(textScaler: TextScaler.linear(0.8)),
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: List.generate(
-            10,
-            (index) {
-              return examCard(index);
-            },
-          ),
+        data: const MediaQueryData()
+            .copyWith(textScaler: const TextScaler.linear(0.8)),
+        child: GetX<QuizListController>(
+          builder: (controller) {
+            if (controller.quizList.isEmpty && loading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (controller.quizList.isEmpty) {
+              return const Center(
+                child: Text("There is no Quiz available"),
+              );
+            } else {
+              return ListView.builder(
+                itemCount: controller.quizList.length,
+                padding: const EdgeInsets.all(20),
+                itemBuilder: (context, index) {
+                  return quizCard(controller.quizList[index]);
+                },
+              );
+            }
+          },
         ),
       ),
     );
   }
 
-  Widget examCard(int index) {
+  Widget quizCard(QuizListModel quizListModel) {
     return Container(
       margin: const EdgeInsets.only(top: 10, bottom: 10),
       decoration: BoxDecoration(
@@ -109,9 +167,7 @@ class _QuizScreensState extends State<QuizScreens> {
                     ),
                   ),
                   Text(
-                    index % 2 == 0
-                        ? "True/False 3H June & July'24"
-                        : "M.C.Q 2 Hemato May'24",
+                    quizListModel.name,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -122,97 +178,52 @@ class _QuizScreensState extends State<QuizScreens> {
               ),
             ),
           ),
-          Container(
-            width: double.infinity,
-            color: Colors.green.withOpacity(0.2),
-            padding:
-                const EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Exam Duration",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade700,
-                  ),
-                ),
-                const Divider(
-                  color: Colors.white,
-                  height: 1,
-                ),
-                const Text(
-                  "10 Minutes",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              ],
+          const Gap(10),
+          Text(
+            "Exam Duration",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade700,
             ),
           ),
-          Container(
-            width: double.infinity,
-            color: Colors.amber.withOpacity(0.2),
-            padding:
-                const EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Exam Start",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade700,
-                  ),
-                ),
-                const Divider(
-                  color: Colors.white,
-                  height: 1,
-                ),
-                const Text(
-                  "4:00 PM - 14th Jul, 2024",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              ],
+          Text(
+            "${quizListModel.timeDuration} minutes",
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          Container(
-            width: double.infinity,
-            color: Colors.pink.withOpacity(0.2),
-            padding:
-                const EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Exam End",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade700,
-                  ),
-                ),
-                const Divider(
-                  color: Colors.white,
-                  height: 1,
-                ),
-                const Text(
-                  "4:10 PM - 14th Jul, 2024",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              ],
+          const Gap(10),
+          Text(
+            "Exam Start",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade700,
+            ),
+          ),
+          Text(
+            "Date: ${quizListModel.startTime.toIso8601String().split('T')[0]}, Time: ${quizListModel.startTime.toIso8601String().split('T')[1].split('.')[0]}",
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const Gap(10),
+          Text(
+            "Exam End",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade700,
+            ),
+          ),
+          Text(
+            "Date: ${quizListModel.endTime.toIso8601String().split('T')[0]}, Time: ${quizListModel.endTime.toIso8601String().split('T')[1].split('.')[0]}",
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
             ),
           ),
           GestureDetector(
