@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               "Quiz Topics",
               style: TextStyle(
-                fontSize: 26,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue,
               ),
@@ -171,14 +171,14 @@ class _HomeScreenState extends State<HomeScreen> {
             SvgPicture.string(
               svg,
               color: Colors.blue,
-              height: 65,
-              width: 65,
+              height: 50,
+              width: 50,
             ),
             const Gap(10),
             Text(
               name,
               style: const TextStyle(
-                fontSize: 28,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),

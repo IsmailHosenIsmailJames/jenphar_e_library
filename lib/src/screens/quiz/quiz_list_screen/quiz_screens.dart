@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:jenphar_e_library/src/api/apis.dart';
-import 'package:jenphar_e_library/src/screens/quiz/questions_screen/question_model.dart';
 import 'package:jenphar_e_library/src/screens/quiz/questions_screen/questions_screen.dart';
 import 'package:jenphar_e_library/src/screens/quiz/quiz_list_screen/controller/quiz_list_controller.dart';
 import 'package:jenphar_e_library/src/screens/quiz/quiz_list_screen/model/quiz_list_model.dart';
@@ -74,7 +74,7 @@ class _QuizScreensState extends State<QuizScreens> {
             Text(
               widget.title,
               style: const TextStyle(
-                fontSize: 26,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue,
               ),
@@ -101,7 +101,7 @@ class _QuizScreensState extends State<QuizScreens> {
       ),
       body: MediaQuery(
         data: const MediaQueryData()
-            .copyWith(textScaler: const TextScaler.linear(0.8)),
+            .copyWith(textScaler: const TextScaler.linear(0.75)),
         child: GetX<QuizListController>(
           builder: (controller) {
             if (controller.quizList.isEmpty && loading) {
@@ -115,7 +115,7 @@ class _QuizScreensState extends State<QuizScreens> {
             } else {
               return ListView.builder(
                 itemCount: controller.quizList.length,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(10),
                 itemBuilder: (context, index) {
                   return quizCard(controller.quizList[index]);
                 },
@@ -128,6 +128,18 @@ class _QuizScreensState extends State<QuizScreens> {
   }
 
   Widget quizCard(QuizListModel quizListModel) {
+    final startDate = quizListModel.startTime;
+    final endDate = quizListModel.endTime;
+    final now = DateTime.now();
+    int status = 0;
+    if (now.compareTo(startDate) == 1 && now.compareTo(endDate) == -1) {
+      status = 0;
+    } else if (now.compareTo(startDate) == -1) {
+      status = 1;
+    } else {
+      status = -1;
+    }
+    log(status.toString());
     return Container(
       margin: const EdgeInsets.only(top: 10, bottom: 10),
       decoration: BoxDecoration(
@@ -227,67 +239,24 @@ class _QuizScreensState extends State<QuizScreens> {
             ),
           ),
           GestureDetector(
-            onTap: () {
-              Get.to(
+            onTap: () async {
+              final infoBox = Hive.box('info');
+              final userInfo = infoBox.get('userInfo', defaultValue: null);
+              final workAreaT = userInfo['work_area_t'];
+              final quizListID = quizListModel.id;
+              // if (status == 0) {
+              await Get.to(
                 () => QuestionsScreen(
-                  quiestuons: [
-                    {
-                      "question":
-                          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-                      "options": [
-                        "option 1.",
-                        "option 2.",
-                        "option 3.",
-                        "option 4."
-                      ]
-                    },
-                    {
-                      "question":
-                          "uries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets c",
-                      "options": [
-                        "option 1.",
-                        "option 2.",
-                        "option 3.",
-                        "option 4."
-                      ]
-                    },
-                    {
-                      "question":
-                          "The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those intereste",
-                      "options": [
-                        "option 1.",
-                        "option 2.",
-                        "option 3.",
-                        "option 4."
-                      ]
-                    },
-                    {
-                      "question":
-                          "Donate: If you use this site regularly and would like to help keep the site on the Internet, please consider donating a small sum to help pay for the hostin ry.",
-                      "options": [
-                        "option 1.",
-                        "option 2.",
-                        "option 3.",
-                        "option 4."
-                      ]
-                    },
-                    {
-                      "question":
-                          "Loercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugi and typesetting industry.",
-                      "options": [
-                        "option 1.",
-                        "option 2.",
-                        "option 3.",
-                        "option 4."
-                      ]
-                    },
-                  ]
-                      .map(
-                        (e) => QuestionModel.fromMap(e),
-                      )
-                      .toList(),
+                  endtime: quizListModel.endTime,
+                  startDate: quizListModel.startTime,
+                  examDuration: quizListModel.timeDuration,
+                  id: quizListID,
+                  titleOfTopice: widget.title,
+                  workAreaT: workAreaT,
                 ),
               );
+              //TODO
+              // }
             },
             child: Container(
               height: 60,
@@ -299,9 +268,13 @@ class _QuizScreensState extends State<QuizScreens> {
                 color: Color.fromARGB(255, 30, 59, 102),
               ),
               alignment: Alignment.center,
-              child: const Text(
-                'START EXAM',
-                style: TextStyle(
+              child: Text(
+                status == 0
+                    ? 'EXAM IS RUNNING'
+                    : status == 1
+                        ? "EXAM IS UPCOMMING"
+                        : "TIME OVER",
+                style: const TextStyle(
                   fontSize: 21,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
