@@ -1,0 +1,58 @@
+{
+    "modelName": "AnswerListModel",
+    "tableName": "answer_list",
+    "columns": {
+      "id": {
+        "type": "INTEGER(11).UNSIGNED",
+        "allowNull": false,
+        "defaultValue": null,
+        "primaryKey": true,
+        "autoIncrement": true,
+        "comment": null,
+        "field": "id"
+      },
+      "user_id": {
+        "type": "INTEGER(11)",
+        "allowNull": false,
+        "defaultValue": null,
+        "primaryKey": false,
+        "autoIncrement": false,
+        "comment": null,
+        "field": "user_id"
+      },
+      "question_id": {
+        "type": "INTEGER(11)",
+        "allowNull": false,
+        "defaultValue": null,
+        "primaryKey": false,
+        "autoIncrement": false,
+        "comment": null,
+        "field": "question_id"
+      },
+      "user_answer": {
+        "type": "STRING(255)",
+        "allowNull": true,
+        "defaultValue": null,
+        "primaryKey": false,
+        "autoIncrement": false,
+        "comment": null,
+        "field": "user_answer"
+      },
+      "created_at": {
+        "type": "TIMESTAMP",
+        "allowNull": false,
+        "defaultValue": "CURRENT_TIMESTAMP"
+      },
+      "updated_at": {
+        "type": "DATETIME",
+        "allowNull": true,
+        "defaultValue": "NULL"
+      }
+    },
+    "options": {
+      "timestamps": false,
+      "createdAt": false,
+      "updatedAt": false
+    }
+  }
+  

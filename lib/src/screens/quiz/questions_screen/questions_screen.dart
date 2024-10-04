@@ -1,12 +1,17 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:http/http.dart';
 import 'package:jenphar_e_library/src/screens/quiz/questions_screen/controller/questions_controller_getx.dart';
 import 'package:jenphar_e_library/src/screens/quiz/questions_screen/model/question_model.dart';
+
+import '../../../api/apis.dart';
 
 class QuestionsScreen extends StatefulWidget {
   final int examDuration;
@@ -37,7 +42,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   late int secondsReaming = widget.examDuration * 60;
   bool isDisposed = false;
   int indexOfQuestion = 0;
-  int selectedOption = -1;
+  List<int> selectedOption = [];
+  bool isTimeOut = false;
+  String errorText = "";
 
   @override
   void initState() {
@@ -55,27 +62,55 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   String? jsonData = "";
 
   void getDataAndInitState() async {
-    // final response = await get(Uri.parse(
-    //     "$apiBase$apiQuizQuestions?quiz_list_id=${widget.id}&work_area_t=${widget.id}"));
-    // log(response.statusCode.toString());
-    // log(response.body);
-    // setState(() {
-    //   jsonData = response.body;
-    // });
-    // if (response.statusCode == 200) {
-    //   await Hive.box('questions')
-    //       .put('${widget.titleOfTopice}/${widget.id}', response.body);
-    //   log("Saved Quiestions");
-    // }
-    final String? jsonResponse =
+    final String? jsonResponseFormLocal =
         Hive.box('questions').get('${widget.titleOfTopice}/${widget.id}');
-    if (jsonResponse != null) {
+    final int? jsonResponseSaveTime =
+        Hive.box('questions').get('${widget.titleOfTopice}/${widget.id}/time');
+
+    if (jsonResponseFormLocal == null || jsonResponseSaveTime == null) {
+      final response = await get(Uri.parse(
+          "$apiBase$apiQuizQuestions?quiz_list_id=${widget.id}&work_area_t=${widget.id}"));
+      log(response.statusCode.toString());
+      log(response.body);
+      setState(() {
+        jsonData = response.body;
+      });
+      if (response.statusCode == 200) {
+        await Hive.box('questions')
+            .put('${widget.titleOfTopice}/${widget.id}', response.body);
+        await Hive.box('questions').put(
+            '${widget.titleOfTopice}/${widget.id}/time',
+            DateTime.now().millisecondsSinceEpoch);
+        Map<String, dynamic> mapOfResponse =
+            Map<String, dynamic>.from(jsonDecode(response.body));
+        List<Map> listOfQuestions = List<Map>.from(mapOfResponse['data']);
+        List<QuestionModel> listOfQuestionsModel = [];
+
+        for (Map question in listOfQuestions) {
+          selectedOption.add(-1);
+          listOfQuestionsModel
+              .add(QuestionModel.fromMap(Map<String, dynamic>.from(question)));
+        }
+        questionModelListController.questionModelList.value =
+            listOfQuestionsModel;
+      } else {}
+    } else {
+      Duration durationBetweenSavedTimeAndNow = DateTime.now().difference(
+          DateTime.fromMillisecondsSinceEpoch(jsonResponseSaveTime));
+
+      if (durationBetweenSavedTimeAndNow.inSeconds > secondsReaming) {
+        setState(() {
+          isTimeOut = true;
+        });
+      }
+
       Map<String, dynamic> mapOfResponse =
-          Map<String, dynamic>.from(jsonDecode(jsonResponse));
+          Map<String, dynamic>.from(jsonDecode(jsonResponseFormLocal));
       List<Map> listOfQuestions = List<Map>.from(mapOfResponse['data']);
       List<QuestionModel> listOfQuestionsModel = [];
 
       for (Map question in listOfQuestions) {
+        selectedOption.add(-1);
         listOfQuestionsModel
             .add(QuestionModel.fromMap(Map<String, dynamic>.from(question)));
       }
@@ -83,22 +118,22 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           listOfQuestionsModel;
     }
 
-    final DateTime startTime = DateTime.now();
-
     Stream.periodic(const Duration(seconds: 1), (i) {
-      final dis = DateTime.now().difference(startTime);
-      return (10 * 60) - dis.inSeconds;
+      return null;
     }).listen(
       (event) {
         if (!isDisposed) {
           setState(() {
-            secondsReaming = event;
+            secondsReaming--;
           });
         }
       },
     );
 
     setState(() {
+      indexOfQuestion = Hive.box('questions').get(
+          '${widget.titleOfTopice}/${widget.id}/lastIndex',
+          defaultValue: 0);
       isLoading = false;
     });
   }
@@ -145,6 +180,19 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       ),
       body: GetX<QuestionsControllerGetx>(
         builder: (controller) {
+          if (isTimeOut) {
+            log("Questions Length: ${controller.questionModelList.length}");
+            log("Questions : ${controller.questionModelList.toJson()}");
+            return const Center(
+              child: Text(
+                "Time Out",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            );
+          }
           if (controller.questionModelList.isEmpty) {
             if (isLoading) {
               return const Center(
@@ -242,14 +290,14 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                               ] +
                               List.generate(
                                 optionsLebgth,
-                                (index) {
+                                (i) {
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: GestureDetector(
                                       behavior: HitTestBehavior.translucent,
                                       onTap: () {
                                         setState(() {
-                                          selectedOption = index;
+                                          selectedOption[indexOfQuestion] = i;
                                         });
                                       },
                                       child: Row(
@@ -258,7 +306,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                             backgroundColor:
                                                 Colors.blue.shade600,
                                             foregroundColor: Colors.white,
-                                            child: Text((index + 1).toString()),
+                                            child: Text((i + 1).toString()),
                                           ),
                                           const Gap(5),
                                           Container(
@@ -282,7 +330,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                                           .width *
                                                       0.70,
                                                   child: Text(
-                                                    listOfOptions[index] ?? "",
+                                                    listOfOptions[i] ?? "",
                                                     style: const TextStyle(
                                                       fontSize: 14,
                                                       fontWeight:
@@ -290,7 +338,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                                     ),
                                                   ),
                                                 ),
-                                                selectedOption != index
+                                                selectedOption[
+                                                            indexOfQuestion] !=
+                                                        i
                                                     ? const Icon(
                                                         Icons.radio_button_off,
                                                       )
@@ -319,13 +369,40 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                               backgroundColor: Colors.blue.shade900,
                               foregroundColor: Colors.white,
                             ),
-                            onPressed: () {
-                              indexOfQuestion++;
-                              setState(() {});
+                            onPressed: () async {
+                              final response = await post(
+                                Uri.parse(apiBase + apiQuizAnsSave),
+                                headers: {"Content-Type": "application/json"},
+                                body: jsonEncode({
+                                  "user_id": widget.workAreaT,
+                                  "question_id": current.id,
+                                  "user_answer":
+                                      selectedOption[indexOfQuestion] == -1
+                                          ? null
+                                          : selectedOption[
+                                              selectedOption[indexOfQuestion]],
+                                }),
+                              );
+                              log(response.body);
+                              log(response.statusCode.toString());
+                              if (response.statusCode == 200) {
+                                indexOfQuestion++;
+                                log(selectedOption.toString());
+                                setState(() {});
+                                await Hive.box('questions').put(
+                                  '${widget.titleOfTopice}/${widget.id}/lastIndex',
+                                  indexOfQuestion,
+                                );
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: "Something went worng");
+                              }
                             },
-                            child: const Text(
-                              "Next",
-                              style: TextStyle(
+                            child: Text(
+                              selectedOption.length - 1 == indexOfQuestion
+                                  ? "Complete"
+                                  : "Next",
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -368,187 +445,5 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
         },
       ),
     );
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: const Column(
-    //       mainAxisAlignment: MainAxisAlignment.start,
-    //       crossAxisAlignment: CrossAxisAlignment.start,
-    //       children: [
-    //         Text(
-    //           "Jenphar E-Library",
-    //           style: TextStyle(fontSize: 13),
-    //         ),
-    //         Text(
-    //           "Questions",
-    //           style: TextStyle(
-    //             fontSize: 26,
-    //             fontWeight: FontWeight.bold,
-    //             color: Colors.blue,
-    //           ),
-    //         ),
-    //       ],
-    //     ),
-    //     actions: [
-    //       Container(
-    //         height: 50,
-    //         width: 50,
-    //         margin: const EdgeInsets.all(3),
-    //         decoration: BoxDecoration(
-    //           image: const DecorationImage(
-    //             image: AssetImage('assets/dummy-profile.png'),
-    //           ),
-    //           borderRadius: BorderRadius.circular(100),
-    //           border: Border.all(
-    //             color: Colors.grey,
-    //             width: 2,
-    //           ),
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    //   body: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.center,
-    //     children: [
-    //       const Gap(10),
-    //       if (indexOfQuestion != widget.quiestuons.length)
-    //         Center(
-    //           child: Text(
-    //             "${secondsReaming ~/ 60}:${(secondsReaming % 60)}",
-    //             style: const TextStyle(
-    //               fontSize: 24,
-    //               fontWeight: FontWeight.bold,
-    //               color: Colors.red,
-    //             ),
-    //           ),
-    //         ),
-    //       const Gap(10),
-    //       if (indexOfQuestion != widget.quiestuons.length)
-    //         Container(
-    //           padding: const EdgeInsets.all(10),
-    //           margin: const EdgeInsets.all(10),
-    //           decoration: BoxDecoration(
-    //             color: Colors.white,
-    //             boxShadow: const [
-    //               BoxShadow(
-    //                 blurRadius: 10,
-    //                 color: Colors.grey,
-    //               ),
-    //             ],
-    //             borderRadius: BorderRadius.circular(10),
-    //           ),
-    //           child: Column(
-    //             mainAxisAlignment: MainAxisAlignment.start,
-    //             crossAxisAlignment: CrossAxisAlignment.start,
-    //             children: [
-    //               Text(
-    //                 "Question ${indexOfQuestion + 1}",
-    //                 style: TextStyle(
-    //                   fontSize: 16,
-    //                   fontWeight: FontWeight.w500,
-    //                   color: Colors.grey.shade600,
-    //                 ),
-    //               ),
-    //               Text(
-    //                 widget.quiestuons[indexOfQuestion].question ?? "",
-    //                 style: TextStyle(
-    //                   fontSize: 20,
-    //                   fontWeight: FontWeight.w700,
-    //                   color: Colors.blue.shade800,
-    //                 ),
-    //               ),
-    //             ],
-    //           ),
-    //         ),
-    //       indexOfQuestion != widget.quiestuons.length
-    //           ? Column(
-    //               children: List.generate(
-    //                 widget.quiestuons[indexOfQuestion].options!.length,
-    //                 (index) {
-    //                   return Padding(
-    //                     padding: const EdgeInsets.all(8.0),
-    //                     child: GestureDetector(
-    //                       behavior: HitTestBehavior.translucent,
-    //                       onTap: () {
-    //                         setState(() {
-    //                           selectedOption = index;
-    //                         });
-    //                       },
-    //                       child: Row(
-    //                         children: [
-    //                           CircleAvatar(
-    //                             backgroundColor: Colors.blue.shade900,
-    //                             foregroundColor: Colors.white,
-    //                             child: Text((index + 1).toString()),
-    //                           ),
-    //                           const Gap(10),
-    //                           Container(
-    //                             padding: const EdgeInsets.all(10),
-    //                             decoration: BoxDecoration(
-    //                               color: Colors.white,
-    //                               boxShadow: const [
-    //                                 BoxShadow(
-    //                                   blurRadius: 10,
-    //                                   color: Colors.grey,
-    //                                 ),
-    //                               ],
-    //                               borderRadius: BorderRadius.circular(10),
-    //                             ),
-    //                             child: Row(
-    //                               children: [
-    //                                 SizedBox(
-    //                                   width: MediaQuery.of(context).size.width *
-    //                                       0.72,
-    //                                   child: Text(
-    //                                     widget.quiestuons[indexOfQuestion]
-    //                                         .options![index],
-    //                                     style: const TextStyle(
-    //                                       fontSize: 18,
-    //                                       fontWeight: FontWeight.bold,
-    //                                     ),
-    //                                   ),
-    //                                 ),
-    //                                 selectedOption != index
-    //                                     ? const Icon(
-    //                                         Icons.radio_button_off,
-    //                                       )
-    //                                     : Icon(
-    //                                         Icons.radio_button_checked,
-    //                                         color: Colors.blue.shade900,
-    //                                       ),
-    //                               ],
-    //                             ),
-    //                           ),
-    //                         ],
-    //                       ),
-    //                     ),
-    //                   );
-    //                 },
-    //               ),
-    //             )
-    //       const Gap(20),
-    //       if (indexOfQuestion != widget.quiestuons.length)
-    //         SizedBox(
-    //           width: MediaQuery.of(context).size.width * 0.90,
-    //           child: ElevatedButton(
-    //             style: ElevatedButton.styleFrom(
-    //               backgroundColor: Colors.blue.shade900,
-    //               foregroundColor: Colors.white,
-    //             ),
-    //             onPressed: () {
-    //               indexOfQuestion++;
-    //               setState(() {});
-    //             },
-    //             child: const Text(
-    //               "Next",
-    //               style: TextStyle(
-    //                 fontSize: 18,
-    //                 fontWeight: FontWeight.bold,
-    //               ),
-    //             ),
-    //           ),
-    //         ),
-    //     ],
-    //   ),
-    // );
   }
 }
