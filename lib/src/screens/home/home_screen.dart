@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:jenphar_e_library/src/screens/quiz/quiz_list_screen/quiz_screens.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -73,18 +74,72 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
-          Container(
-            height: 50,
-            width: 50,
-            margin: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              image: const DecorationImage(
-                image: AssetImage('assets/dummy-profile.png'),
-              ),
-              borderRadius: BorderRadius.circular(100),
-              border: Border.all(
-                color: Colors.grey,
-                width: 2,
+          GestureDetector(
+            onTap: () {
+              final infoBox = Hive.box('info');
+              final userInfo = infoBox.get('userInfo', defaultValue: null);
+              final workAreaT = userInfo['work_area_t'];
+              showDialog(
+                context: context,
+                builder: (context) => Dialog(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Gap(20),
+                      Container(
+                        height: 80,
+                        width: 80,
+                        margin: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                            image: AssetImage('assets/dummy-profile.png'),
+                          ),
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      const Gap(20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "ID: ",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            workAreaT,
+                            style: const TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Gap(20),
+                    ],
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              height: 50,
+              width: 50,
+              margin: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                image: const DecorationImage(
+                  image: AssetImage('assets/dummy-profile.png'),
+                ),
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(
+                  color: Colors.grey,
+                  width: 2,
+                ),
               ),
             ),
           ),

@@ -44,7 +44,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   int indexOfQuestion = 0;
   List<int> selectedOption = [];
   bool isTimeOut = false;
-  String errorText = "";
+  String? errorText;
 
   @override
   void initState() {
@@ -78,9 +78,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       if (response.statusCode == 200) {
         await Hive.box('questions')
             .put('${widget.titleOfTopice}/${widget.id}', response.body);
-        await Hive.box('questions').put(
-            '${widget.titleOfTopice}/${widget.id}/time',
-            DateTime.now().millisecondsSinceEpoch);
+        await Hive.box('questions')
+            .put('${widget.titleOfTopice}/${widget.id}/time', secondsReaming);
+
         Map<String, dynamic> mapOfResponse =
             Map<String, dynamic>.from(jsonDecode(response.body));
         List<Map> listOfQuestions = List<Map>.from(mapOfResponse['data']);
@@ -93,12 +93,23 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
         }
         questionModelListController.questionModelList.value =
             listOfQuestionsModel;
-      } else {}
+      } else {
+        log("Response is not 200");
+        try {
+          final decoded = jsonDecode(response.body);
+          if (decoded['message'] != null) {
+            setState(() {
+              errorText = decoded['message'];
+              isLoading = false;
+            });
+          }
+        } catch (e) {
+          log("Json Not Valid : $e");
+        }
+      }
     } else {
-      Duration durationBetweenSavedTimeAndNow = DateTime.now().difference(
-          DateTime.fromMillisecondsSinceEpoch(jsonResponseSaveTime));
-
-      if (durationBetweenSavedTimeAndNow.inSeconds > secondsReaming) {
+      secondsReaming = jsonResponseSaveTime;
+      if (secondsReaming <= 0) {
         setState(() {
           isTimeOut = true;
         });
@@ -118,17 +129,21 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           listOfQuestionsModel;
     }
 
-    Stream.periodic(const Duration(seconds: 1), (i) {
-      return null;
-    }).listen(
-      (event) {
-        if (!isDisposed) {
-          setState(() {
-            secondsReaming--;
-          });
-        }
-      },
-    );
+    if (questionModelListController.questionModelList.isNotEmpty) {
+      Stream.periodic(const Duration(seconds: 1), (i) {
+        return null;
+      }).listen(
+        (event) async {
+          if (!isDisposed) {
+            await Hive.box('questions').put(
+                '${widget.titleOfTopice}/${widget.id}/time', secondsReaming);
+            setState(() {
+              secondsReaming--;
+            });
+          }
+        },
+      );
+    }
 
     setState(() {
       indexOfQuestion = Hive.box('questions').get(
@@ -161,18 +176,72 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           ],
         ),
         actions: [
-          Container(
-            height: 50,
-            width: 50,
-            margin: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              image: const DecorationImage(
-                image: AssetImage('assets/dummy-profile.png'),
-              ),
-              borderRadius: BorderRadius.circular(100),
-              border: Border.all(
-                color: Colors.grey,
-                width: 2,
+          GestureDetector(
+            onTap: () {
+              final infoBox = Hive.box('info');
+              final userInfo = infoBox.get('userInfo', defaultValue: null);
+              final workAreaT = userInfo['work_area_t'];
+              showDialog(
+                context: context,
+                builder: (context) => Dialog(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Gap(20),
+                      Container(
+                        height: 80,
+                        width: 80,
+                        margin: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                            image: AssetImage('assets/dummy-profile.png'),
+                          ),
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      const Gap(20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "ID: ",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            workAreaT,
+                            style: const TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Gap(20),
+                    ],
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              height: 50,
+              width: 50,
+              margin: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                image: const DecorationImage(
+                  image: AssetImage('assets/dummy-profile.png'),
+                ),
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(
+                  color: Colors.grey,
+                  width: 2,
+                ),
               ),
             ),
           ),
@@ -199,8 +268,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                 child: CircularProgressIndicator(),
               );
             } else {
-              return const Center(
-                child: Text("Something Went Worng"),
+              return Center(
+                child: Text(errorText ?? "Something Went Worng"),
               );
             }
           } else {
@@ -370,32 +439,40 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                               foregroundColor: Colors.white,
                             ),
                             onPressed: () async {
-                              final response = await post(
-                                Uri.parse(apiBase + apiQuizAnsSave),
-                                headers: {"Content-Type": "application/json"},
-                                body: jsonEncode({
-                                  "user_id": widget.workAreaT,
-                                  "question_id": current.id,
-                                  "user_answer":
-                                      selectedOption[indexOfQuestion] == -1
-                                          ? null
-                                          : selectedOption[
-                                              selectedOption[indexOfQuestion]],
-                                }),
-                              );
-                              log(response.body);
-                              log(response.statusCode.toString());
-                              if (response.statusCode == 200) {
-                                indexOfQuestion++;
-                                log(selectedOption.toString());
-                                setState(() {});
-                                await Hive.box('questions').put(
-                                  '${widget.titleOfTopice}/${widget.id}/lastIndex',
-                                  indexOfQuestion,
+                              log(jsonEncode({
+                                "user_id": int.parse(widget.workAreaT),
+                                "question_id": current.id,
+                                "user_answer":
+                                    selectedOption[indexOfQuestion] == -1
+                                        ? null
+                                        : listOfOptions[
+                                            selectedOption[indexOfQuestion]],
+                              }));
+                              if (selectedOption[indexOfQuestion] != -1) {
+                                final response = await post(
+                                  Uri.parse(apiBase + apiQuizAnsSave),
+                                  headers: {"Content-Type": "application/json"},
+                                  body: jsonEncode({
+                                    "work_area_t": int.parse(widget.workAreaT),
+                                    "question_id": current.id,
+                                    "user_answer": listOfOptions[
+                                        selectedOption[indexOfQuestion]],
+                                  }),
                                 );
-                              } else {
-                                Fluttertoast.showToast(
-                                    msg: "Something went worng");
+                                log(response.body);
+                                log(response.statusCode.toString());
+                                if (response.statusCode == 200) {
+                                  indexOfQuestion++;
+                                  log(selectedOption.toString());
+                                  setState(() {});
+                                  await Hive.box('questions').put(
+                                    '${widget.titleOfTopice}/${widget.id}/lastIndex',
+                                    indexOfQuestion,
+                                  );
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: "Something went worng");
+                                }
                               }
                             },
                             child: Text(
