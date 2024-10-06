@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -5,7 +6,6 @@ import 'package:jenphar_e_library/src/screens/auth/auth_controller_getx.dart';
 import 'package:jenphar_e_library/src/screens/auth/login/model/login_response_model.dart';
 import 'package:jenphar_e_library/src/screens/home/home_screen.dart';
 import 'package:jenphar_e_library/src/screens/setup/welcome_screen.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,11 +63,11 @@ class InitLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
-        child: LoadingAnimationWidget.threeRotatingDots(
-          color: Colors.blue.shade900,
-          size: 30,
+        child: CupertinoActivityIndicator(
+          color: Colors.blue,
+          radius: 20,
         ),
       ),
     );
