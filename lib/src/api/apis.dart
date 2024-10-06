@@ -1,4 +1,4 @@
-String apiBase = 'http://192.168.76.221:3012/api';
+String apiBase = 'http://119.148.39.150:3012/api';
 String apiLogin = '/login';
 String apiQuizList = '/quiz_list';
 String apiQuizQuestions = '/quiz_questions';

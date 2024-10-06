@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:jenphar_e_library/src/screens/quiz/quiz_list_screen/quiz_screens.dart';
 
+import '../setup/welcome_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -121,7 +123,24 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      const Gap(20),
+                      Container(
+                        margin: const EdgeInsets.all(10),
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.blue,
+                              shadowColor: Colors.transparent),
+                          onPressed: () async {
+                            await Hive.box('info').clear();
+                            await (await Hive.openBox('questions')).clear();
+                            Get.offAll(
+                              () => const WelcomeScreen(),
+                            );
+                          },
+                          child: const Text("Log Out"),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -145,8 +164,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
+      body: GridView(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10),
+        padding: const EdgeInsets.only(top: 100, left: 20, right: 20),
         children: [
           cardOfTopices(
             svg:
@@ -209,11 +230,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding: const EdgeInsets.all(20),
-        margin: const EdgeInsets.all(10),
+        alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: Colors.white,
+          color: const Color.fromARGB(255, 245, 254, 255),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.shade400,
@@ -222,6 +242,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SvgPicture.string(
               svg,

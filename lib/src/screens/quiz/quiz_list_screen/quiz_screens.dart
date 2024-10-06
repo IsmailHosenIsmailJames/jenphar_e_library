@@ -169,7 +169,7 @@ class _QuizScreensState extends State<QuizScreens> {
             } else {
               return ListView.builder(
                 itemCount: controller.quizList.length,
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(25),
                 itemBuilder: (context, index) {
                   return quizCard(controller.quizList[index]);
                 },
@@ -313,12 +313,14 @@ class _QuizScreensState extends State<QuizScreens> {
             },
             child: Container(
               height: 60,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(10),
                   bottomRight: Radius.circular(10),
                 ),
-                color: Color.fromARGB(255, 30, 59, 102),
+                color: status == 1
+                    ? const Color.fromARGB(255, 30, 59, 102)
+                    : Colors.grey,
               ),
               alignment: Alignment.center,
               child: Text(

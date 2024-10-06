@@ -23,6 +23,10 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       defaultTransition: Transition.leftToRight,
       theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color.fromARGB(255, 217, 238, 255),
+        ),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 217, 238, 255),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade900),
         brightness: Brightness.light,
         useMaterial3: true,

@@ -278,10 +278,18 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                 final current = controller.questionModelList[indexOfQuestion];
                 int optionsLebgth = 0;
 
-                if (current.option1 != null) optionsLebgth++;
-                if (current.option2 != null) optionsLebgth++;
-                if (current.option3 != null) optionsLebgth++;
-                if (current.option4 != null) optionsLebgth++;
+                if (current.option1 != null && current.option1 != "") {
+                  optionsLebgth++;
+                }
+                if (current.option2 != null && current.option2 != "") {
+                  optionsLebgth++;
+                }
+                if (current.option3 != null && current.option3 != "") {
+                  optionsLebgth++;
+                }
+                if (current.option4 != null && current.option4 != "") {
+                  optionsLebgth++;
+                }
                 final listOfOptions = [
                   current.option1,
                   current.option2,
