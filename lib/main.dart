@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jenphar_e_library/src/screens/auth/auth_controller_getx.dart';
 import 'package:jenphar_e_library/src/screens/auth/login/model/login_response_model.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       defaultTransition: Transition.leftToRight,
       theme: ThemeData(
+        textTheme: GoogleFonts.poppinsTextTheme(),
         appBarTheme: const AppBarTheme(
           backgroundColor: Color.fromARGB(255, 217, 238, 255),
         ),
