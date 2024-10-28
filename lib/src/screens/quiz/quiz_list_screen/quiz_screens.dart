@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -11,6 +10,9 @@ import 'package:jenphar_e_library/src/api/apis.dart';
 import 'package:jenphar_e_library/src/screens/quiz/questions_screen/questions_screen.dart';
 import 'package:jenphar_e_library/src/screens/quiz/quiz_list_screen/controller/quiz_list_controller.dart';
 import 'package:jenphar_e_library/src/screens/quiz/quiz_list_screen/model/quiz_list_model.dart';
+import 'package:toastification/toastification.dart';
+
+import '../../../core/functions/show_towast.dart';
 
 class QuizScreens extends StatefulWidget {
   final String title;
@@ -49,10 +51,18 @@ class _QuizScreensState extends State<QuizScreens> {
         }
         quizListController.quizList.value = quizListModel;
       } else {
-        Fluttertoast.showToast(msg: decoded['message'].toString());
+        showToastNotification(
+          msg: decoded['message'].toString(),
+          context: context,
+          type: ToastificationType.success,
+        );
       }
     } else {
-      Fluttertoast.showToast(msg: 'Something went worng');
+      showToastNotification(
+        msg: 'Something went worng',
+        context: context,
+        type: ToastificationType.success,
+      );
     }
     setState(() {
       loading = false;

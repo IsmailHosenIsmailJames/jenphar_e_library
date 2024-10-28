@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -11,6 +10,9 @@ import 'package:jenphar_e_library/src/api/apis.dart';
 import 'package:jenphar_e_library/src/screens/auth/auth_controller_getx.dart';
 import 'package:jenphar_e_library/src/screens/auth/login/model/login_response_model.dart';
 import 'package:jenphar_e_library/src/screens/home/home_screen.dart';
+import 'package:toastification/toastification.dart';
+
+import '../../../core/functions/show_towast.dart';
 
 class LoginScreens extends StatefulWidget {
   const LoginScreens({super.key});
@@ -158,7 +160,11 @@ class _LoginScreensState extends State<LoginScreens> {
                         if (response.statusCode == 200) {
                           final decoded = jsonDecode(response.body);
                           if (decoded['success'] == true) {
-                            Fluttertoast.showToast(msg: decoded['message']);
+                            showToastNotification(
+                              msg: decoded['message'],
+                              context: context,
+                              type: ToastificationType.success,
+                            );
                             final authControllerGetx =
                                 Get.put(AuthControllerGetx());
                             authControllerGetx.loginResponseModel.add(
@@ -170,10 +176,18 @@ class _LoginScreensState extends State<LoginScreens> {
 
                             Get.offAll(() => const HomeScreen());
                           } else {
-                            Fluttertoast.showToast(msg: decoded['message']);
+                            showToastNotification(
+                              msg: decoded['message'],
+                              context: context,
+                              type: ToastificationType.success,
+                            );
                           }
                         } else {
-                          Fluttertoast.showToast(msg: "Something went worng");
+                          showToastNotification(
+                            msg: "Something went worng",
+                            context: context,
+                            type: ToastificationType.success,
+                          );
                         }
                       }
                       setState(() {

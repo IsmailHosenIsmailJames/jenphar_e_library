@@ -3,15 +3,16 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart';
 import 'package:jenphar_e_library/src/screens/quiz/questions_screen/controller/questions_controller_getx.dart';
 import 'package:jenphar_e_library/src/screens/quiz/questions_screen/model/question_model.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../../api/apis.dart';
+import '../../../core/functions/show_towast.dart';
 
 class QuestionsScreen extends StatefulWidget {
   final int examDuration;
@@ -478,8 +479,11 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                     indexOfQuestion,
                                   );
                                 } else {
-                                  Fluttertoast.showToast(
-                                      msg: "Something went worng");
+                                  showToastNotification(
+                                    msg: "Something went worng",
+                                    context: context,
+                                    type: ToastificationType.success,
+                                  );
                                 }
                               }
                             },
