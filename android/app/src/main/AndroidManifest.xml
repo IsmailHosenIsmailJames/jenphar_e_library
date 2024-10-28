@@ -5,6 +5,7 @@
         android:label="Jenphar E-Library"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true"
 		android:roundIcon="@mipmap/ic_launcher_rounded">
         <activity
             android:name=".MainActivity"

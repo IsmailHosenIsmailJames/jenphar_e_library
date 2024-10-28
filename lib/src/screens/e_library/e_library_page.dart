@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:jenphar_e_library/src/api/apis.dart';
 import 'package:jenphar_e_library/src/screens/e_library/category/category_page.dart';
+import 'package:jenphar_e_library/src/screens/e_library/files_view/files_view_page.dart';
 import 'package:jenphar_e_library/src/screens/home/home_screen.dart';
 
 import '../quiz/quiz_list_screen/quiz_screens.dart';
@@ -30,7 +31,7 @@ class _ELibraryPageState extends State<ELibraryPage> {
     try {
       final response = await get(Uri.parse("$apiBase/e-library?is_api=true"));
       if (response.statusCode == 200) {
-        data = Map.from(jsonDecode(response.body));
+        data = Map.from(jsonDecode(response.body)['result']);
       } else {
         errorMsg = "URL is not exits";
       }
@@ -145,10 +146,14 @@ class _ELibraryPageState extends State<ELibraryPage> {
                     cardOfTopics(
                       svg:
                           '''<svg class="icon" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697"></path><path d="M18 14v4h4"></path><path d="M18 11v-4a2 2 0 0 0 -2 -2h-2"></path><path d="M8 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z"></path><path d="M18 18m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path><path d="M8 11h4"></path><path d="M8 15h3"></path></svg>''',
-                      name: "Upcoming Brands",
+                      name: "Monthly Exam Result",
                       onPressed: () {
                         Get.to(
-                          () => const QuizScreens(title: "Upcoming Brands"),
+                          () => FilesViewPage(
+                            type: "result",
+                            title: "Result",
+                            id: data!['monthly_exam_result'],
+                          ),
                         );
                       },
                     ),
