@@ -27,9 +27,9 @@ class _QuizResultsState extends State<QuizResults> {
 
   getDataFormServer() async {
     try {
-      log("Going to call : $apiBase/quiz_results?work_area_t=${Hive.box("info").get("userInfo")['work_area_t']}");
+      log("Going to call : $apiBase/api/quiz_results?work_area_t=${Hive.box("info").get("userInfo")['work_area_t']}");
       final response = await get(Uri.parse(
-          "$apiBase/quiz_results?work_area_t=${Hive.box("info").get("userInfo")['work_area_t']}"));
+          "$apiBase/api/quiz_results?work_area_t=${Hive.box("info").get("userInfo")['work_area_t']}"));
       if (response.statusCode == 200) {
         final quizResultData = jsonDecode(response.body);
         quizResultsModel = QuizResultsModel.fromMap(quizResultData);

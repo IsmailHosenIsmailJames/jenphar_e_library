@@ -26,8 +26,8 @@ class _LeaderBoardState extends State<LeaderBoard> {
 
   getDataFormServer() async {
     try {
-      log("Going to call : $apiBase/leaderboard");
-      final response = await get(Uri.parse("$apiBase/leaderboard"));
+      log("Going to call : $apiBase/api/leaderboard");
+      final response = await get(Uri.parse("$apiBase/api/leaderboard"));
       if (response.statusCode == 200) {
         final leaderBoardData = jsonDecode(response.body);
         leaderBoardModel = LeaderBoardModel.fromMap(leaderBoardData);
