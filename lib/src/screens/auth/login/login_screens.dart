@@ -179,14 +179,14 @@ class _LoginScreensState extends State<LoginScreens> {
                             showToastNotification(
                               msg: decoded['message'],
                               context: context,
-                              type: ToastificationType.success,
+                              type: ToastificationType.error,
                             );
                           }
                         } else {
                           showToastNotification(
                             msg: "Something went worng",
                             context: context,
-                            type: ToastificationType.success,
+                            type: ToastificationType.error,
                           );
                         }
                       }

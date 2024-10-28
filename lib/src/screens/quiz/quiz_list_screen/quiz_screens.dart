@@ -61,7 +61,7 @@ class _QuizScreensState extends State<QuizScreens> {
       showToastNotification(
         msg: 'Something went worng',
         context: context,
-        type: ToastificationType.success,
+        type: ToastificationType.error,
       );
     }
     setState(() {

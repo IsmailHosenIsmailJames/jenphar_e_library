@@ -482,7 +482,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                   showToastNotification(
                                     msg: "Something went worng",
                                     context: context,
-                                    type: ToastificationType.success,
+                                    type: ToastificationType.error,
                                   );
                                 }
                               }
