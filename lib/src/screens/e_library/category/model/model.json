@@ -1,0 +1,86 @@
+{
+    "success": true,
+    "results": [
+      {
+        "id": 2,
+        "category": "Hematology",
+        "medicine_name": "Chelova",
+        "brand_logo": "Chelova.png",
+        "status": 1,
+        "created_at": "2023-06-21T09:34:30.000Z",
+        "updated_at": null
+      },
+      {
+        "id": 6,
+        "category": "Hematology",
+        "medicine_name": "Dasatin",
+        "brand_logo": "Dasatin.png",
+        "status": 1,
+        "created_at": "2023-06-21T09:34:30.000Z",
+        "updated_at": null
+      },
+      {
+        "id": 3,
+        "category": "Hematology",
+        "medicine_name": "Defera",
+        "brand_logo": "Defera.png",
+        "status": 1,
+        "created_at": "2023-06-21T09:34:30.000Z",
+        "updated_at": null
+      },
+      {
+        "id": 1,
+        "category": "Hematology",
+        "medicine_name": "Eltrom",
+        "brand_logo": "Eltrom.png",
+        "status": 1,
+        "created_at": "2023-06-21T09:34:30.000Z",
+        "updated_at": null
+      },
+      {
+        "id": 4,
+        "category": "Hematology",
+        "medicine_name": "Ibrunib",
+        "brand_logo": "Ibrunib.png",
+        "status": 1,
+        "created_at": "2023-06-21T09:34:30.000Z",
+        "updated_at": null
+      },
+      {
+        "id": 5,
+        "category": "Hematology",
+        "medicine_name": "Leukenib",
+        "brand_logo": "Leukenib.png",
+        "status": 1,
+        "created_at": "2023-06-21T09:34:30.000Z",
+        "updated_at": null
+      },
+      {
+        "id": 7,
+        "category": "Hematology",
+        "medicine_name": "Merol-A",
+        "brand_logo": "Merol-A.png",
+        "status": 1,
+        "created_at": "2023-06-21T09:34:30.000Z",
+        "updated_at": null
+      },
+      {
+        "id": 55,
+        "category": "Hematology",
+        "medicine_name": "Myolop",
+        "brand_logo": "Myolop.png",
+        "status": 1,
+        "created_at": "2023-09-26T06:43:31.000Z",
+        "updated_at": null
+      },
+      {
+        "id": 64,
+        "category": "Hematology",
+        "medicine_name": "PELEX",
+        "brand_logo": "Pelex-01_1723610587831.jpg",
+        "status": 1,
+        "created_at": "2024-08-14T04:43:07.000Z",
+        "updated_at": null
+      }
+    ]
+  }

@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisCount: 2, crossAxisSpacing: 15, mainAxisSpacing: 15),
         padding: const EdgeInsets.only(top: 100, left: 20, right: 20),
         children: [
-          cardOfTopices(
+          cardOfTopics(
             svg:
                 '''<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="icon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
               <path d="M64 480H48a32 32 0 01-32-32V112a32 32 0 0132-32h16a32 32 0 0132 32v336a32 32 0 01-32 32zm176-304a32 32 0 00-32-32h-64a32 32 0 00-32 32v28a4 4 0 004 4h120a4 4 0 004-4zM112 448a32 32 0 0032 32h64a32 32 0 0032-32v-30a2 2 0 00-2-2H114a2 2 0 00-2 2z"></path>
@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-          cardOfTopices(
+          cardOfTopics(
             svg:
                 '''<svg class="icon" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
               <path d="M5.933.87a2.89 2.89 0 0 1 4.134 0l.622.638.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636zM7.002 11a1 1 0 1 0 2 0 1 1 0 0 0-2 0zm1.602-2.027c.04-.534.198-.815.846-1.26.674-.475 1.05-1.09 1.05-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.71 1.71 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745.336 0 .504-.24.554-.627z"></path>
@@ -91,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-          cardOfTopices(
+          cardOfTopics(
             svg:
                 '''<svg class="icon" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 384 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 448c0 35.3 28.7 64 64 64H224V384c0-17.7 14.3-32 32-32H384V64c0-35.3-28.7-64-64-64H64C28.7 0 0 28.7 0 64V448zM171.3 75.3l-96 96c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l96-96c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6zm96 32l-160 160c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l160-160c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6zM384 384H256V512L384 384z"></path>
@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-          cardOfTopices(
+          cardOfTopics(
             svg:
                 '''<svg class="icon" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
               <path fill="none" d="M0 0h24v24H0z"></path>
@@ -122,10 +122,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-Widget cardOfTopices(
-    {required String svg,
+Widget cardOfTopics(
+    {Widget? child,
+    String? svg,
     required String name,
     Color? color,
+    double? fontSize,
     required void Function() onPressed}) {
   return GestureDetector(
     onTap: onPressed,
@@ -145,18 +147,19 @@ Widget cardOfTopices(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SvgPicture.string(
-            svg,
-            color: color ?? Colors.blue,
-            height: 50,
-            width: 50,
-          ),
+          child ??
+              SvgPicture.string(
+                svg!,
+                color: color ?? Colors.blue,
+                height: 50,
+                width: 50,
+              ),
           const Gap(10),
           Text(
             name,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: fontSize ?? 18,
               fontWeight: FontWeight.bold,
             ),
           ),

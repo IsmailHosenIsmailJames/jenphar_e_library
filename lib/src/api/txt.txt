@@ -1,0 +1,4 @@
+http://119.148.39.150:3012/e-library?is_api=true
+http://119.148.39.150:3012/e-library/category?category_name=Hematology&is_api=true
+Static
+http://119.148.39.150:3012/e-library/upload?type=manual&brand_id=2&is_api=true

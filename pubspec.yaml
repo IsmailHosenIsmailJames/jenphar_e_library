@@ -46,6 +46,8 @@ dependencies:
   http: ^1.2.2
   google_fonts: ^6.2.1
   toastification: ^2.3.0
+  cached_network_image: ^3.4.1
+  syncfusion_flutter_pdfviewer: ^27.1.56
 
 dev_dependencies:
   flutter_test:
