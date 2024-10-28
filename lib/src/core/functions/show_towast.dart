@@ -8,7 +8,7 @@ void showToastNotification({
 }) {
   toastification.show(
     context: context,
-    title: Text('msg'),
+    title: Text(msg),
     autoCloseDuration: const Duration(seconds: 5),
     type: type,
   );
