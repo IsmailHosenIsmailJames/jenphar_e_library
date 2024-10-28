@@ -83,14 +83,16 @@ class _FilesViewPageState extends State<FilesViewPage> {
                     bottom: 20,
                   ),
                   itemBuilder: (context, index) {
+                    String url =
+                        "http://119.148.39.150:3012/uploads/${data[index].file}";
+                    String extension = url.split(".").last;
+                    log(data[index].type.toString());
                     return GestureDetector(
                       onTap: () {
-                        log(
-                          "http://119.148.39.150:3012/uploads/${data[index].file}",
-                        );
+                        log(url);
                         launchUrl(
                           Uri.parse(
-                            "http://119.148.39.150:3012/uploads/${data[index].file}",
+                            url,
                           ),
                         );
                       },
@@ -100,7 +102,11 @@ class _FilesViewPageState extends State<FilesViewPage> {
                           Row(
                             children: [
                               Text(
-                                data[index].type == "video" ? "Video" : "File",
+                                extension == "pdf"
+                                    ? "File"
+                                    : extension == "mp4"
+                                        ? "Video"
+                                        : "File",
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
@@ -127,9 +133,27 @@ class _FilesViewPageState extends State<FilesViewPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Gap(10),
-                                SizedBox(
-                                    height: 50,
-                                    child: Image.asset("assets/pdf-icon.png")),
+                                extension == "pdf"
+                                    ? SizedBox(
+                                        height: 50,
+                                        child:
+                                            Image.asset("assets/pdf-icon.png"),
+                                      )
+                                    : extension == "mp4"
+                                        ? Center(
+                                            child: Icon(
+                                              Icons.video_collection_rounded,
+                                              size: 40,
+                                              color: Colors.blue.shade900,
+                                            ),
+                                          )
+                                        : Center(
+                                            child: Icon(
+                                              Icons.file_copy,
+                                              size: 40,
+                                              color: Colors.blue.shade900,
+                                            ),
+                                          ),
                                 const Gap(10),
                                 Text(
                                   data[index].file ?? "",
