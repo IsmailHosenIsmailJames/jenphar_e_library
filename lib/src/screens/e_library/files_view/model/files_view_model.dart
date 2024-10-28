@@ -4,10 +4,10 @@ class FilesViewModel {
   int? id;
   int? brandId;
   String? file;
-  FileType? fileType;
-  Type? type;
+  String? fileType;
+  String? type;
   int? status;
-  DateTime? createdAt;
+  String? createdAt;
 
   FilesViewModel({
     this.id,
@@ -23,10 +23,10 @@ class FilesViewModel {
     int? id,
     int? brandId,
     String? file,
-    FileType? fileType,
-    Type? type,
+    String? fileType,
+    String? type,
     int? status,
-    DateTime? createdAt,
+    String? createdAt,
   }) =>
       FilesViewModel(
         id: id ?? this.id,
@@ -47,41 +47,19 @@ class FilesViewModel {
         id: json["id"],
         brandId: json["brand_id"],
         file: json["file"],
-        fileType: fileTypeValues.map[json["file_type"]]!,
-        type: typeValues.map[json["type"]]!,
+        fileType: json["file_type"],
+        type: json["type"],
         status: json["status"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
+        createdAt: json["created_at"],
       );
 
   Map<String, dynamic> toMap() => {
         "id": id,
         "brand_id": brandId,
         "file": file,
-        "file_type": fileTypeValues.reverse[fileType],
-        "type": typeValues.reverse[type],
+        "file_type": fileType,
+        "type": type,
         "status": status,
-        "created_at": createdAt?.toIso8601String(),
+        "created_at": createdAt,
       };
-}
-
-enum FileType { PDF }
-
-final fileTypeValues = EnumValues({"pdf": FileType.PDF});
-
-enum Type { RESULT }
-
-final typeValues = EnumValues({"result": Type.RESULT});
-
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
 }

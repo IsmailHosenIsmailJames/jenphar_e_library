@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:jenphar_e_library/src/screens/e_library/category/model/category_model.dart';
+import 'package:jenphar_e_library/src/screens/e_library/option/option_page.dart';
 
 import '../../../api/apis.dart';
 import '../../home/home_screen.dart';
+import '../option/options_list.dart';
 
 class CategoryPage extends StatefulWidget {
   final String categoryName;
+
   const CategoryPage({super.key, required this.categoryName});
 
   @override
@@ -99,8 +102,17 @@ class _CategoryPageState extends State<CategoryPage> {
                         fontSize: 14,
                         onPressed: () {
                           Get.to(
-                            () => CategoryPage(
-                              categoryName: "Hematology",
+                            () => OptionPage(
+                              listOfOptions: [
+                                trainingManual,
+                                journal,
+                                eSalesAidOption,
+                                campaignsOption,
+                                videoOption,
+                              ],
+                              category: data[index].medicineName ?? "",
+                              id: data[index].id.toString(),
+                              title: data[index].medicineName ?? "",
                             ),
                           );
                         },

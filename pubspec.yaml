@@ -50,6 +50,7 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^27.1.56
   flutter_inappwebview: ^6.1.5
   url_launcher: ^6.3.1
+  video_player: ^2.9.2
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +79,7 @@ flutter:
     - assets/jenphar_elibrary_logo.png
     - assets/poster_1725353869082.jpeg
     - assets/dummy-profile.png
+    - assets/pdf-icon.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
