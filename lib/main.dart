@@ -16,6 +16,8 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
+bool isUpdateChecked = false;
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

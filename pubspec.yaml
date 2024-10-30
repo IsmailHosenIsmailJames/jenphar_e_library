@@ -48,6 +48,14 @@ dependencies:
   toastification: ^2.3.0
   cached_network_image: ^3.4.1
   url_launcher: ^6.3.1
+  permission_handler: ^11.3.1
+  path_provider: ^2.1.5
+  dio: ^5.7.0
+  fluentui_system_icons: ^1.1.262
+  open_file: ^3.5.9
+  shared_preferences: ^2.3.2
+  package_info_plus: ^8.1.0
+  device_info_plus: ^11.1.0
 
 dev_dependencies:
   flutter_test:
