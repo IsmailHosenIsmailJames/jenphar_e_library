@@ -5,8 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jenphar_e_library/src/screens/auth/auth_controller_getx.dart';
 import 'package:jenphar_e_library/src/screens/auth/login/model/login_response_model.dart';
+import 'package:jenphar_e_library/src/screens/common/internet_connection_off_notify.dart';
 import 'package:jenphar_e_library/src/screens/home/home_screen.dart';
 import 'package:jenphar_e_library/src/screens/setup/welcome_screen.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+
+import 'src/core/in_app_update/in_app_android_update/in_app_update_android.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,24 +42,35 @@ class MyApp extends StatelessWidget {
       ),
       home: const InitLoadingScreen(),
       onInit: () async {
-        await Future.delayed(
-          const Duration(milliseconds: 100),
-        );
-        final infoBox = Hive.box('info');
-        final userInfo = infoBox.get('userInfo', defaultValue: null);
+        final connectivityResult = await Connectivity().checkConnectivity();
+        if (connectivityResult.contains(ConnectivityResult.mobile) ||
+            connectivityResult.contains(ConnectivityResult.ethernet) ||
+            connectivityResult.contains(ConnectivityResult.wifi)) {
+          isUpdateChecked = false;
+          while (!isUpdateChecked) {
+            await Future.delayed(Duration(milliseconds: 100));
+          }
 
-        if (userInfo != null) {
-          await Future.delayed(const Duration(milliseconds: 200));
-          final authControllerGetx = Get.put(AuthControllerGetx());
-          authControllerGetx.loginResponseModel.value = [
-            LoginResponseModel.fromMap(Map<String, dynamic>.from(userInfo))
-          ];
-          Get.offAll(
-            () => const HomeScreen(),
-          );
+          final infoBox = Hive.box('info');
+          final userInfo = infoBox.get('userInfo', defaultValue: null);
+
+          if (userInfo != null) {
+            await Future.delayed(const Duration(milliseconds: 200));
+            final authControllerGetx = Get.put(AuthControllerGetx());
+            authControllerGetx.loginResponseModel.value = [
+              LoginResponseModel.fromMap(Map<String, dynamic>.from(userInfo))
+            ];
+            Get.offAll(
+              () => const HomeScreen(),
+            );
+          } else {
+            Get.offAll(
+              () => const WelcomeScreen(),
+            );
+          }
         } else {
-          Get.offAll(
-            () => const WelcomeScreen(),
+          Get.to(
+            () => const InternetConnectionOffNotify(),
           );
         }
       },
@@ -68,6 +83,8 @@ class InitLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    inAppUpdateAndroid(context);
+
     return const Scaffold(
       body: Center(
         child: CupertinoActivityIndicator(

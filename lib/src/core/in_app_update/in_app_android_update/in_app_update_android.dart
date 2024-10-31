@@ -13,19 +13,21 @@ import '../functions/get_app_info.dart';
 import '../model/latest_app_info.dart';
 
 Future<void> inAppUpdateAndroid(BuildContext context) async {
+  log("Called in app update");
   final inAppUpdateController = Get.put(InAppUpdateController());
   try {
     LatestAppInfoAPIModel latestAppInfo = await getInfoFormAPI();
     String? lastVersion = latestAppInfo.version;
-    String? lastBuildNumber = latestAppInfo.buildNumber;
-    if (lastVersion != null && lastBuildNumber != null) {
+    if (lastVersion != null) {
       List<String> currentVersionAndBuild = await getAppVersionAndBuildNumber();
       String currentVersion = currentVersionAndBuild[0];
       // String currentBuild = currentVersionAndBuild[1];
+      log("currentVersion: $currentVersion");
       if (compareVersion(
         currentVersion: currentVersion,
         latestVersion: lastVersion,
       )) {
+        log("message: ${latestAppInfo.toJson()}");
         final supportedAbisByDevice = await getDeviceSupportedAbisInfo();
         final supportedAbisByApp =
             inAppUpdateController.supportedArchitectureList;
@@ -38,7 +40,7 @@ Future<void> inAppUpdateAndroid(BuildContext context) async {
         }
         String? apkDownloadLink;
         if (architecture == null) {
-          apkDownloadLink = latestAppInfo.downloadLink;
+          return;
         } else {
           for (int i = 0; i < latestAppInfo.downloadLinkList!.length; i++) {
             if (latestAppInfo.downloadLinkList![i].architecture ==

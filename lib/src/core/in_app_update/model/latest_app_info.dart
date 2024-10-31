@@ -1,47 +1,24 @@
 import 'dart:convert';
 
-// LatestAppInfoAPIModel
-
 class LatestAppInfoAPIModel {
   String? version;
-  String? buildNumber;
   bool? forceToUpdate;
-  bool? removeCacheOnUpdate;
-  bool? removeDataOnUpdate;
-  bool? removeCacheAndDataOnUpdate;
-  String? downloadLink;
   List<DownloadLinkList>? downloadLinkList;
 
   LatestAppInfoAPIModel({
     this.version,
-    this.buildNumber,
     this.forceToUpdate,
-    this.removeCacheOnUpdate,
-    this.removeDataOnUpdate,
-    this.removeCacheAndDataOnUpdate,
-    this.downloadLink,
     this.downloadLinkList,
   });
 
   LatestAppInfoAPIModel copyWith({
     String? version,
-    String? buildNumber,
     bool? forceToUpdate,
-    bool? removeCacheOnUpdate,
-    bool? removeDataOnUpdate,
-    bool? removeCacheAndDataOnUpdate,
-    String? downloadLink,
     List<DownloadLinkList>? downloadLinkList,
   }) =>
       LatestAppInfoAPIModel(
         version: version ?? this.version,
-        buildNumber: buildNumber ?? this.buildNumber,
         forceToUpdate: forceToUpdate ?? this.forceToUpdate,
-        removeCacheOnUpdate: removeCacheOnUpdate ?? this.removeCacheOnUpdate,
-        removeDataOnUpdate: removeDataOnUpdate ?? this.removeDataOnUpdate,
-        removeCacheAndDataOnUpdate:
-            removeCacheAndDataOnUpdate ?? this.removeCacheAndDataOnUpdate,
-        downloadLink: downloadLink ?? this.downloadLink,
         downloadLinkList: downloadLinkList ?? this.downloadLinkList,
       );
 
@@ -53,12 +30,7 @@ class LatestAppInfoAPIModel {
   factory LatestAppInfoAPIModel.fromMap(Map<String, dynamic> json) =>
       LatestAppInfoAPIModel(
         version: json["version"],
-        buildNumber: json["buildNumber"],
         forceToUpdate: json["forceToUpdate"],
-        removeCacheOnUpdate: json["removeCacheOnUpdate"],
-        removeDataOnUpdate: json["removeDataOnUpdate"],
-        removeCacheAndDataOnUpdate: json["removeCacheAndDataOnUpdate"],
-        downloadLink: json["downloadLink"],
         downloadLinkList: json["downloadLinkList"] == null
             ? []
             : List<DownloadLinkList>.from(json["downloadLinkList"]!
@@ -67,12 +39,7 @@ class LatestAppInfoAPIModel {
 
   Map<String, dynamic> toMap() => {
         "version": version,
-        "buildNumber": buildNumber,
         "forceToUpdate": forceToUpdate,
-        "removeCacheOnUpdate": removeCacheOnUpdate,
-        "removeDataOnUpdate": removeDataOnUpdate,
-        "removeCacheAndDataOnUpdate": removeCacheAndDataOnUpdate,
-        "downloadLink": downloadLink,
         "downloadLinkList": downloadLinkList == null
             ? []
             : List<dynamic>.from(downloadLinkList!.map((x) => x.toMap())),

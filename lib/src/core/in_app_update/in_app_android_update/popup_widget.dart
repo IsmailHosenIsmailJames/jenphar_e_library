@@ -6,15 +6,14 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jenphar_e_library/main.dart';
+import 'package:jenphar_e_library/src/api/apis.dart';
 import 'package:jenphar_e_library/src/core/functions/show_towast.dart';
 import 'package:jenphar_e_library/src/core/in_app_update/controller/in_app_update_controller.dart';
 import 'package:jenphar_e_library/src/core/in_app_update/model/latest_app_info.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toastification/toastification.dart';
 
 class PopupWidget extends StatefulWidget {
@@ -188,7 +187,7 @@ class _PopupWidgetState extends State<PopupWidget> {
         isDownloading = true;
       });
       Dio().download(
-        widget.apkDownloadLink,
+        apiBase + widget.apkDownloadLink,
         filePath,
         onReceiveProgress: (count, total) {
           controllerGetx.downloadProgress.value = count / total;
@@ -214,20 +213,6 @@ class _PopupWidgetState extends State<PopupWidget> {
             isGranted) &&
         (isDownloaded || widget.isExitsSameVersionAPK)) {
       try {
-        if (widget.latestAppInfoAPIModel.removeCacheAndDataOnUpdate == true) {
-          SharedPreferences info = await SharedPreferences.getInstance();
-          await info.clear();
-          await Hive.box("info").clear();
-        } else {
-          if (widget.latestAppInfoAPIModel.removeCacheOnUpdate == true) {
-            SharedPreferences info = await SharedPreferences.getInstance();
-            await info.clear();
-          }
-          if (widget.latestAppInfoAPIModel.removeDataOnUpdate == true) {
-            await Hive.box("info").clear();
-          }
-        }
-
         final result = await OpenFile.open(filePath);
 
         if (result.type != ResultType.done) {
