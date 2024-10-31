@@ -1,0 +1,18 @@
+{
+  "version": "1.2.3",
+  "forceToUpdate": true,
+  "downloadLinkList": [
+    {
+      "architecture": "x86_64",
+      "link": "/app/uploads/app-x86_64-release.apk"
+    },
+    {
+      "architecture": "armeabi-v7a",
+      "link": "/app/uploads/app-armeabi-v7a-release.apk"
+    },
+    {
+      "architecture": "arm64-v8a",
+      "link": "/app/uploads/app-arm64-v8a-release.apk"
+    }
+  ]
+}
