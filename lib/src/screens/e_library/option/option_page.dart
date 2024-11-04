@@ -52,7 +52,7 @@ class _OptionPageState extends State<OptionPage> {
                 Get.to(
                   () => FilesViewPage(
                     title: widget.listOfOptions[index]['title']!,
-                    id: widget.listOfOptions[index]['brand_id']!,
+                    id: widget.id,
                     type: widget.listOfOptions[index]['type']!,
                   ),
                 );
