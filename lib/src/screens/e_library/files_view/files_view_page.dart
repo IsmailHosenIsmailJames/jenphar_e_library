@@ -3,7 +3,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart';
+import 'package:jenphar_e_library/src/screens/e_library/files_view/pdf/pdf_view.dart';
+import 'package:jenphar_e_library/src/screens/e_library/files_view/video/video_payer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../api/apis.dart';
@@ -90,11 +93,27 @@ class _FilesViewPageState extends State<FilesViewPage> {
                     return GestureDetector(
                       onTap: () {
                         log(url);
-                        launchUrl(
-                          Uri.parse(
-                            url,
-                          ),
-                        );
+                        if (url.endsWith("pdf") || url.endsWith("PDF")) {
+                          Get.to(
+                            () => PdfViewInAPP(pdfUrlLink: url),
+                          );
+                        } else if (url.endsWith("mp4") ||
+                            url.endsWith("MP4") ||
+                            url.endsWith("WebM") ||
+                            url.endsWith("webm") ||
+                            url.endsWith("MKV") ||
+                            url.endsWith("mkv")) {
+                          Get.to(
+                            () => VideoPayerInAPP(
+                              videoUrl: url,
+                            ),
+                          );
+                        } else {
+                          launchUrl(
+                            Uri.parse(url),
+                            mode: LaunchMode.externalApplication,
+                          );
+                        }
                       },
                       child: Column(
                         children: [
