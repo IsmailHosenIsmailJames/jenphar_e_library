@@ -18,7 +18,7 @@ class QuestionsScreen extends StatefulWidget {
   final int examDuration;
   final DateTime startDate;
   final DateTime endtime;
-  final String titleOfTopice;
+  final String titleOfTopic;
   final int id;
   final String workAreaT;
 
@@ -29,7 +29,7 @@ class QuestionsScreen extends StatefulWidget {
     required this.endtime,
     required this.id,
     required this.workAreaT,
-    required this.titleOfTopice,
+    required this.titleOfTopic,
   });
 
   @override
@@ -64,9 +64,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
   void getDataAndInitState() async {
     final String? jsonResponseFormLocal =
-        Hive.box('questions').get('${widget.titleOfTopice}/${widget.id}');
+        Hive.box('questions').get('${widget.titleOfTopic}/${widget.id}');
     final int? jsonResponseSaveTime =
-        Hive.box('questions').get('${widget.titleOfTopice}/${widget.id}/time');
+        Hive.box('questions').get('${widget.titleOfTopic}/${widget.id}/time');
 
     if (jsonResponseFormLocal == null || jsonResponseSaveTime == null) {
       final response = await get(Uri.parse(
@@ -78,9 +78,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       });
       if (response.statusCode == 200) {
         await Hive.box('questions')
-            .put('${widget.titleOfTopice}/${widget.id}', response.body);
+            .put('${widget.titleOfTopic}/${widget.id}', response.body);
         await Hive.box('questions')
-            .put('${widget.titleOfTopice}/${widget.id}/time', secondsReaming);
+            .put('${widget.titleOfTopic}/${widget.id}/time', secondsReaming);
 
         Map<String, dynamic> mapOfResponse =
             Map<String, dynamic>.from(jsonDecode(response.body));
@@ -137,7 +137,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
         (event) async {
           if (!isDisposed) {
             await Hive.box('questions').put(
-                '${widget.titleOfTopice}/${widget.id}/time', secondsReaming);
+                '${widget.titleOfTopic}/${widget.id}/time', secondsReaming);
             setState(() {
               secondsReaming--;
             });
@@ -148,7 +148,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
     setState(() {
       indexOfQuestion = Hive.box('questions').get(
-          '${widget.titleOfTopice}/${widget.id}/lastIndex',
+          '${widget.titleOfTopic}/${widget.id}/lastIndex',
           defaultValue: 0);
       isLoading = false;
     });
@@ -270,26 +270,26 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
               );
             } else {
               return Center(
-                child: Text(errorText ?? "Something Went Worng"),
+                child: Text(errorText ?? "Something Went Wrong"),
               );
             }
           } else {
             {
               if (indexOfQuestion != controller.questionModelList.length) {
                 final current = controller.questionModelList[indexOfQuestion];
-                int optionsLebgth = 0;
+                int optionsLength = 0;
 
                 if (current.option1 != null && current.option1 != "") {
-                  optionsLebgth++;
+                  optionsLength++;
                 }
                 if (current.option2 != null && current.option2 != "") {
-                  optionsLebgth++;
+                  optionsLength++;
                 }
                 if (current.option3 != null && current.option3 != "") {
-                  optionsLebgth++;
+                  optionsLength++;
                 }
                 if (current.option4 != null && current.option4 != "") {
-                  optionsLebgth++;
+                  optionsLength++;
                 }
                 final listOfOptions = [
                   current.option1,
@@ -367,7 +367,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                 )
                               ] +
                               List.generate(
-                                optionsLebgth,
+                                optionsLength,
                                 (i) {
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -475,12 +475,12 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                   log(selectedOption.toString());
                                   setState(() {});
                                   await Hive.box('questions').put(
-                                    '${widget.titleOfTopice}/${widget.id}/lastIndex',
+                                    '${widget.titleOfTopic}/${widget.id}/lastIndex',
                                     indexOfQuestion,
                                   );
                                 } else {
                                   showToastNotification(
-                                    msg: "Something went worng",
+                                    msg: "Something went wrong",
                                     context: context,
                                     type: ToastificationType.error,
                                   );

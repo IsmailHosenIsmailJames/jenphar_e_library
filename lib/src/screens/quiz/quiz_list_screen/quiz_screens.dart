@@ -319,18 +319,16 @@ class _QuizScreensState extends State<QuizScreens> {
                         infoBox.get('userInfo', defaultValue: null);
                     final workAreaT = userInfo['work_area_t'];
                     final quizListID = quizListModel.id;
-                    if (status == 0) {
-                      await Get.to(
-                        () => QuestionsScreen(
-                          endtime: quizListModel.endTime,
-                          startDate: quizListModel.startTime,
-                          examDuration: quizListModel.timeDuration,
-                          id: quizListID,
-                          titleOfTopice: widget.title,
-                          workAreaT: workAreaT,
-                        ),
-                      );
-                    }
+                    await Get.to(
+                      () => QuestionsScreen(
+                        endtime: quizListModel.endTime,
+                        startDate: quizListModel.startTime,
+                        examDuration: quizListModel.timeDuration,
+                        id: quizListID,
+                        titleOfTopic: widget.title,
+                        workAreaT: workAreaT,
+                      ),
+                    );
                   },
                   child: Container(
                     height: 60,
