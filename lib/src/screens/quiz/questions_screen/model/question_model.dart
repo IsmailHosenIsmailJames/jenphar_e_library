@@ -10,7 +10,7 @@ class QuestionModel {
   String? option4;
   String answer;
   DateTime createdAt;
-  DateTime? updatedAt;
+  // DateTime? updatedAt;
   int? timeDuration;
 
   QuestionModel({
@@ -23,7 +23,7 @@ class QuestionModel {
     this.option4,
     required this.answer,
     required this.createdAt,
-    required this.updatedAt,
+    // required this.updatedAt,
     this.timeDuration,
   });
 
@@ -50,7 +50,7 @@ class QuestionModel {
         option4: option4 ?? this.option4,
         answer: answer ?? this.answer,
         createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
+        // updatedAt: updatedAt ?? this.updatedAt,
         timeDuration: timeDuration ?? this.timeDuration,
       );
 
@@ -69,7 +69,7 @@ class QuestionModel {
         option4: json["option_4"],
         answer: json["answer"],
         createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"],
+        // updatedAt: json["updated_at"],
         timeDuration: json["time_duration"],
       );
 
@@ -83,7 +83,7 @@ class QuestionModel {
         "option_4": option4,
         "answer": answer,
         "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt,
+        // "updated_at": updatedAt,
         "time_duration": timeDuration,
       };
 }

@@ -70,13 +70,16 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
     if (jsonResponseFormLocal == null || jsonResponseSaveTime == null) {
       final response = await get(Uri.parse(
-          "$apiBase$apiQuizQuestions?quiz_list_id=${widget.id}&work_area_t=${widget.id}"));
+          "$apiBase$apiQuizQuestions?quiz_list_id=${widget.id}&work_area_t=${widget.workAreaT}"));
+      log("$apiBase$apiQuizQuestions?quiz_list_id=${widget.id}&work_area_t=${widget.workAreaT}");
       log(response.statusCode.toString());
       log(response.body);
       setState(() {
         jsonData = response.body;
       });
       if (response.statusCode == 200) {
+        log("Data Got...");
+        log(response.body);
         await Hive.box('questions')
             .put('${widget.titleOfTopic}/${widget.id}', response.body);
         await Hive.box('questions')
@@ -156,6 +159,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log(Hive.box('info').get('userInfo', defaultValue: null).toString());
     return Scaffold(
       appBar: AppBar(
         title: const Column(
@@ -449,14 +453,12 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                             ),
                             onPressed: () async {
                               log(jsonEncode({
-                                "user_id": int.parse(widget.workAreaT),
+                                "work_area_t": int.parse(widget.workAreaT),
                                 "question_id": current.id,
-                                "user_answer":
-                                    selectedOption[indexOfQuestion] == -1
-                                        ? null
-                                        : listOfOptions[
-                                            selectedOption[indexOfQuestion]],
+                                "user_answer": listOfOptions[
+                                    selectedOption[indexOfQuestion]],
                               }));
+
                               if (selectedOption[indexOfQuestion] != -1) {
                                 final response = await post(
                                   Uri.parse(apiBase + apiQuizAnsSave),

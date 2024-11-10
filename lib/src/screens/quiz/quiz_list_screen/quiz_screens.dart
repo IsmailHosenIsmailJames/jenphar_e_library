@@ -317,7 +317,9 @@ class _QuizScreensState extends State<QuizScreens> {
                     final infoBox = Hive.box('info');
                     final userInfo =
                         infoBox.get('userInfo', defaultValue: null);
+                    print(userInfo);
                     final workAreaT = userInfo['work_area_t'];
+                    print(workAreaT);
                     final quizListID = quizListModel.id;
                     await Get.to(
                       () => QuestionsScreen(
