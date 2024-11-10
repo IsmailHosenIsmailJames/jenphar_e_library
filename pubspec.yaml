@@ -91,8 +91,7 @@ flutter:
     - assets/poster_1725353869082.jpeg
     - assets/dummy-profile.png
     - assets/pdf-icon.png
-  #   - images/a_dot_ham.jpeg
-
+    - assets/No_Internet_Connection.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
