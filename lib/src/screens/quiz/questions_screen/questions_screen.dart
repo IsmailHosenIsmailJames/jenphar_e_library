@@ -62,6 +62,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
   String? jsonData = "";
 
+  bool isApiSubmittingAns = false;
+
   void getDataAndInitState() async {
     final String? jsonResponseFormLocal =
         Hive.box('questions').get('${widget.titleOfTopic}/${widget.id}');
@@ -452,52 +454,72 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                               foregroundColor: Colors.white,
                             ),
                             onPressed: () async {
-                              log(jsonEncode({
-                                "work_area_t": int.parse(widget.workAreaT),
-                                "question_id": current.id,
-                                "user_answer": listOfOptions[
-                                    selectedOption[indexOfQuestion]],
-                              }));
+                              if (isApiSubmittingAns == true) {
+                                return;
+                              }
+                              setState(() {
+                                isApiSubmittingAns = true;
+                              });
+                              try {
+                                log(jsonEncode({
+                                  "work_area_t": int.parse(widget.workAreaT),
+                                  "question_id": current.id,
+                                  "user_answer": listOfOptions[
+                                      selectedOption[indexOfQuestion]],
+                                }));
 
-                              if (selectedOption[indexOfQuestion] != -1) {
-                                final response = await post(
-                                  Uri.parse(apiBase + apiQuizAnsSave),
-                                  headers: {"Content-Type": "application/json"},
-                                  body: jsonEncode({
-                                    "work_area_t": int.parse(widget.workAreaT),
-                                    "question_id": current.id,
-                                    "user_answer": listOfOptions[
-                                        selectedOption[indexOfQuestion]],
-                                  }),
-                                );
-                                log(response.body);
-                                log(response.statusCode.toString());
-                                if (response.statusCode == 200) {
-                                  indexOfQuestion++;
-                                  log(selectedOption.toString());
-                                  setState(() {});
-                                  await Hive.box('questions').put(
-                                    '${widget.titleOfTopic}/${widget.id}/lastIndex',
-                                    indexOfQuestion,
+                                if (selectedOption[indexOfQuestion] != -1) {
+                                  final response = await post(
+                                    Uri.parse(apiBase + apiQuizAnsSave),
+                                    headers: {
+                                      "Content-Type": "application/json"
+                                    },
+                                    body: jsonEncode({
+                                      "work_area_t":
+                                          int.parse(widget.workAreaT),
+                                      "question_id": current.id,
+                                      "user_answer": listOfOptions[
+                                          selectedOption[indexOfQuestion]],
+                                    }),
                                   );
-                                } else {
-                                  showToastNotification(
-                                    msg: "Something went wrong",
-                                    context: context,
-                                    type: ToastificationType.error,
-                                  );
+                                  log(response.body);
+                                  log(response.statusCode.toString());
+                                  if (response.statusCode == 200) {
+                                    indexOfQuestion++;
+                                    log(selectedOption.toString());
+                                    setState(() {});
+                                    await Hive.box('questions').put(
+                                      '${widget.titleOfTopic}/${widget.id}/lastIndex',
+                                      indexOfQuestion,
+                                    );
+                                  } else {
+                                    showToastNotification(
+                                      msg: "Something went wrong",
+                                      context: context,
+                                      type: ToastificationType.error,
+                                    );
+                                  }
                                 }
+                                setState(() {
+                                  isApiSubmittingAns = false;
+                                });
+                              } catch (e) {
+                                setState(() {
+                                  isApiSubmittingAns = false;
+                                });
                               }
                             },
-                            child: Text(
-                              selectedOption.length - 1 == indexOfQuestion
-                                  ? "Complete"
-                                  : "Next",
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            child: isApiSubmittingAns == true
+                                ? const CircularProgressIndicator()
+                                : Text(
+                                    selectedOption.length - 1 == indexOfQuestion
+                                        ? "Complete"
+                                        : "Next",
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                           ),
                         ),
                       ],
